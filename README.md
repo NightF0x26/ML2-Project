@@ -47,7 +47,7 @@
 
 This project was developed using a `Notebook`. Therefore if you're looking forward to test it out yourself, keep in mind to either use a **[Anaconda Distribution](https://www.anaconda.com/)** or a 3rd party software that helps you inspect and execute it.
 
-Therefore, for more informations regarding the **Virtual Environment** used in Anaconda, consider checking the [DEPENDENCIES.md]() file.
+Therefore, for more informations regarding the **Virtual Environment** used in Anaconda, consider checking the [DEPENDENCIES.md](https://github.com/NightF0x26/ML2-Project/blob/main/DEPENDENCIES.md) file.
 
 ### Planned Work
 
@@ -243,7 +243,7 @@ Our experiments showed that **YAMNet** with transfer learning produced the best 
 
 ## Authorship
 
-- **Authors** &#8594; [Gonçalo Esteves](https://github.com/EstevesX10), [Nuno Gomes](https://github.com/NightF0x26) and [Pedro Afonseca](https://github.com/PsuperX)
+- **Authors** &#8594; [Nuno Gomes](https://github.com/NightF0x26) and [Zhixu Ni]()
 - **Course** &#8594; Machine Learning II [[CC3043](https://sigarra.up.pt/fcup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=546532)]
 - **University** &#8594; Faculty of Sciences, University of Porto
 
@@ -252,7 +252,7 @@ Our experiments showed that **YAMNet** with transfer learning produced the best 
 
 <!-- <sup></sup> -->
 
-`README.md by Gonçalo Esteves`
+`README.md by Nuno Gomes`
 </sub>
 
 </div>
