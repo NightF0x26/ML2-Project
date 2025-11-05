@@ -23,7 +23,7 @@
 <br/>
 
 <div align="center">
-    <a href="https://github.com/EstevesX10/ML2-Urban-Sound-Classification/blob/main/LICENSE">
+    <a href="https://github.com/NightF0x26/ML2-Project/blob/main/DEPENDENCIES.md">
         <img src="https://img.shields.io/github/license/EstevesX10/ML2-Urban-Sound-Classification?style=flat&logo=gitbook&logoColor=fec8bf&label=License&color=fec8bf">
     </a>
     <a href="">
@@ -32,7 +32,7 @@
     <a href="">
         <img src="https://img.shields.io/github/stars/EstevesX10/ML2-Urban-Sound-Classification?style=flat&logo=adafruit&logoColor=fec8bf&logoSize=auto&label=Stars&color=fec8bf">
     </a>
-    <a href="https://github.com/EstevesX10/ML2-Urban-Sound-Classification/blob/main/DEPENDENCIES.md">
+    <a href="https://github.com/NightF0x26/ML2-Project/blob/main/DEPENDENCIES.md">
         <img src="https://img.shields.io/badge/Dependencies-DEPENDENCIES.md-white?style=flat&logo=anaconda&logoColor=fec8bf&logoSize=auto&color=fec8bf"> 
     </a>
 </div>
