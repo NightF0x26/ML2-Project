@@ -112,7 +112,7 @@ def loadPathsConfig() -> dict:
         "Datasets": createDatasetsFolderPaths(numberFolds=10),
         "ModelDevelopmentAndEvaluation": {
             "MLP": createModelResultsFolderPaths(
-                modelName="MLP", numberTests=3, numberFolds=10
+                modelName="MLP", numberTests=4, numberFolds=10
             ),
             "CNN": createModelResultsFolderPaths(
                 modelName="CNN", numberTests=4, numberFolds=10
