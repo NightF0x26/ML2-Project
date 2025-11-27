@@ -1,9 +1,11 @@
+# Módulo para gerenciar dados do UrbanSound8k e realizar validação cruzada
 from typing import Tuple, Callable
 import numpy as np
 import pandas as pd
 import os
 from pathlib import Path
 
+# Ferramentas de pré-processamento e métricas de avaliação
 from sklearn.preprocessing import LabelBinarizer, StandardScaler
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, confusion_matrix
 
@@ -25,82 +27,82 @@ class UrbanSound8kManager:
         pathsConfig: dict = None,
     ) -> None:
         """
-        # Description
-            -> Constructor that helps define new instances of the Class UrbanSound8kManager.
+        # Descrição
+            -> Construtor que define novas instâncias da classe UrbanSound8kManager.
         ------------------------------------------------------------------------------------
-        := param: featuresToUse - Features to consider use (from the ones previously extracted).
-        := param: modelType - Name of the Model which is going to be used for training.
-        := param: testNumber - Number of the test the current model is going to perform.
-        := param: pathsConfig - Dictionary used to store the paths to important files used throughout the project.
-        := return: None, since we are only instanciating a class.
+        := param: featuresToUse - Características a considerar (das previamente extraídas).
+        := param: modelType - Nome do modelo que será usado para treino.
+        := param: testNumber - Número do teste que o modelo atual irá executar.
+        := param: pathsConfig - Dicionário usado para armazenar os caminhos dos arquivos importantes do projeto.
+        := return: None, pois estamos apenas instanciando a classe.
         """
 
-        # Check if a DataDimensionality was given
+        # Verifica se uma dimensionalidade dos dados foi fornecida
         if featuresToUse is None:
-            raise ValueError("Missing the Value for Data Dimensionality!")
+            raise ValueError("Faltando o valor para a dimensionalidade dos dados!")
 
-        # Check if the modelType was passed on
+        # Verifica se o tipo de modelo foi passado
         if modelType is None:
             raise ValueError(
-                'Missing the Model Type to be later used for Trainning! [Use "CNN", "MLP" or "YAMNET" - depending on what model you plan to train on the selected data!]'
+                'Faltando o tipo de modelo para ser usado no treino! [Use "CNN", "MLP" ou "YAMNET" - dependendo do modelo que deseja treinar nos dados selecionados!]'
             )
 
-        # Verify if the test number was given
+        # Verifica se o número do teste foi fornecido
         if testNumber is None:
-            raise ValueError("Missing the Model's test number!")
+            raise ValueError("Faltando o número do teste do modelo!")
 
-        # Check if a paths configuration was given
+        # Verifica se a configuração de caminhos foi fornecida
         if pathsConfig is None:
-            raise ValueError("Missing a Dictionary with the Paths Configuration!")
+            raise ValueError("Faltando o dicionário com a configuração dos caminhos!")
 
-        # Save the data dimensionality
+        # Salva a dimensionalidade dos dados
         self.featuresToUse = featuresToUse
 
-        # Save the type of model we are working with
+        # Salva o tipo de modelo
         self.modelType = modelType
 
-        # Save the number of the test
+        # Salva o número do teste
         self.testNumber = testNumber
 
-        # Save the dictionary with the file paths
+        # Salva o dicionário com os caminhos dos arquivos
         self.pathsConfig = pathsConfig
 
     def manageData(self) -> pd.DataFrame:
         """
-        # Description
-            -> This method allows a easy management of the data from all the
-            collected DataFrames in order to create a DataFrame with all the information.
+        # Descrição
+            -> Este método permite gerenciar facilmente os dados de todos os
+            DataFrames coletados para criar um DataFrame com todas as informações.
         ------------------------------------------------------------------------
-        := return: Train and Test Pandas DataFrames.
+        := return: DataFrames de treino e teste do Pandas.
         """
 
         if (
             self.featuresToUse not in self.pathsConfig["Datasets"]["Fold-1"].keys()
             and self.featuresToUse != "transfer"
         ):
-            # Invalid Data Dimensionality
+            # Dimensionalidade dos dados inválida
             raise ValueError(
-                f'Invalid Features Selected! (Please choose from {self.pathsConfig["Datasets"]["Fold-1"].keys()})'
+                f'Características inválidas selecionadas! (Escolha entre {self.pathsConfig["Datasets"]["Fold-1"].keys()})'
             )
 
-        # Create a dataframe with all the collected data across all folds
+        # Cria um dataframe com todos os dados coletados dos folds (inicialmente vazio)
         df = None
 
-        # Iterate through the datasets' folds
+        # Itera pelos folds dos datasets (tratamento especial para transfer learning)
         if self.featuresToUse == "transfer":
             df = pd.read_pickle(self.pathsConfig["Datasets"][self.featuresToUse])
         else:
             for fold in range(1, 11):
-                # Load the current fold dataframe
+                # Carrega o dataframe do fold atual
                 fold_df = pd.read_pickle(
                     self.pathsConfig["Datasets"][f"Fold-{fold}"][self.featuresToUse]
                 )
 
-                # If the DataFrame has yet to be created, then we initialize it
+                # Se o DataFrame ainda não foi criado, inicializa
                 if df is None:
                     df = fold_df
                 else:
-                    # Concatenate the current fold's DataFrame
+                    # Concatena o DataFrame do fold atual
                     df = pd.concat([df, fold_df], axis=0, ignore_index=True)
 
         return df
@@ -109,46 +111,46 @@ class UrbanSound8kManager:
         self, testFold: int = None
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
-        # Description
-            -> This method allows to obtain the UrbanSound8k's overall train and test
-            sets across all folds considering the one selected as the test fold.
+        # Descrição
+            -> Este método permite obter os conjuntos de treino e teste do UrbanSound8k
+            considerando o fold selecionado como teste.
         ---------------------------------------------------------------------------------------------------------------------
-        := param: testFold - Dataset's Fold whose data is to be used for testing. [NOTE] testFold must be in [1, 2, ..., 10].
-        := return: The train and test sets to be used to perform one of the 10-Fold Cross Validation
+        := param: testFold - Fold do conjunto de dados a ser usado para teste. [NOTA] testFold deve estar em [1, 2, ..., 10].
+        := return: Conjuntos de treino e teste para realizar a validação cruzada 10-Fold
         """
 
-        # Check if the testFold is given
+        # Verifica se o testFold foi fornecido
         if testFold is None:
-            raise ValueError("Missing the number of the Test Fold!")
+            raise ValueError("Faltando o número do Fold de Teste!")
 
-        # Verify the integrity of the test fold selected
+        # Verifica a integridade do fold selecionado
         if testFold < 1 or testFold > 10:
-            raise ValueError("Invalid Test Fold!")
+            raise ValueError("Fold de Teste inválido!")
 
-        # Manage data from all the collected DataFrames
+        # Gerencia os dados de todos os DataFrames coletados
         df = self.manageData()
 
-        # Calculate the amount of unique target labels
+        # Calcula a quantidade de rótulos alvo únicos
         numClasses = np.unique(df["target"]).size
 
-        # Separate the data into train, validation and test
+        # Separa os dados em treino, validação e teste
         train_df = df[(df["fold"] != testFold) & (df["fold"] != (testFold % 10 + 1))]
         validation_df = df[(df["fold"] == (testFold % 10 + 1))]
         test_df = df[(df["fold"] == testFold)]
 
-        # Reset indexes
+        # Reseta os índices
         train_df = train_df.reset_index(drop=True)
         validation_df = validation_df.reset_index(drop=True)
         test_df = test_df.reset_index(drop=True)
 
-        # Binarize target column on the train set and transform the one on the test set
+        # Binariza a coluna alvo no treino e transforma no teste
         labelBinarizer = LabelBinarizer()
         trainBinarizedTarget = labelBinarizer.fit_transform(train_df["target"])
         validationBinarizedTarget = labelBinarizer.transform(validation_df["target"])
         testBinarizedTarget = labelBinarizer.transform(test_df["target"])
         self.classes_ = labelBinarizer.classes_
 
-        # Update train, validation and test DataFrames with the Binarized Target
+        # Atualiza os DataFrames de treino, validação e teste com o alvo binarizado
         train_df = pd.concat(
             [
                 train_df.drop(columns=["target"]),
@@ -173,16 +175,17 @@ class UrbanSound8kManager:
             axis=1,
         )
 
-        # Evaluate the kind of data dimensionality provided and adapt the method to it
+        # Avalia o tipo de dimensionalidade dos dados e adapta o método de extração de características
+        # Trata dados 1D processados (MFCCs ou outras características)
         if (
             self.featuresToUse == "1D-Processed-MFCCs"
             or self.featuresToUse == "1D-Processed-Features"
         ):
-            # Define the columns of the features and the target
+            # Define as colunas das características e do alvo
             featuresCols = train_df.columns[2 : len(train_df.columns) - numClasses]
             targetCols = train_df.columns[-numClasses:]
 
-            # Split the data into X and y for train, validation and test sets
+            # Separa os dados em X e y para treino, validação e teste
             X_train = train_df[featuresCols].to_numpy()
             y_train = train_df[targetCols].to_numpy()
 
@@ -192,7 +195,8 @@ class UrbanSound8kManager:
             X_test = test_df[featuresCols].to_numpy()
             y_test = test_df[targetCols].to_numpy()
 
-            # Normalize the data
+            # Normaliza os dados usando média e desvio padrão do conjunto de treino
+            # Isso garante que os dados estejam em escala padronizada
             mean = X_train.mean()
             std = X_train.std()
 
@@ -201,11 +205,12 @@ class UrbanSound8kManager:
             X_test = (X_test - mean) / std
 
         elif self.featuresToUse == "2D-Raw-MFCCs":
-            # Define the columns of the features and the target
+            # Trata dados 2D brutos (matrizes MFCC)
+            # Define as colunas das características e do alvo
             featuresCols = "MFCC"
             targetCols = train_df.columns[-numClasses:]
 
-            # Split the data into X and y for train, validation and test sets
+            # Separa os dados em X e y para treino, validação e teste
             X_train = train_df[featuresCols]
             y_train = train_df[targetCols].to_numpy()
 
@@ -215,12 +220,12 @@ class UrbanSound8kManager:
             X_test = test_df[featuresCols]
             y_test = test_df[targetCols].to_numpy()
 
-            # Stack the data
+            # Empilha os dados
             X_train = np.stack(X_train)
             X_val = np.stack(X_val)
             X_test = np.stack(X_test)
 
-            # Normalize the data
+            # Normaliza os dados 2D usando média e desvio padrão do conjunto de treino
             mean = X_train.mean()
             std = X_train.std()
 
@@ -229,11 +234,12 @@ class UrbanSound8kManager:
             X_test = (X_test - mean) / std
 
         elif self.featuresToUse == "transfer":
-            # Define the columns of the features and the target
+            # Trata dados de transfer learning (embeddings pré-computados)
+            # Define as colunas das características e do alvo
             featuresCols = "embedding"
             targetCols = train_df.columns[-numClasses:]
 
-            # Split the data into X and y for train, validation and test sets
+            # Separa os dados em X e y para treino, validação e teste
             X_train = train_df[featuresCols]
             y_train = train_df[targetCols].to_numpy()
 
@@ -248,62 +254,67 @@ class UrbanSound8kManager:
             X_test = np.stack(X_test)
 
         else:
+            # Tratamento para tipos de dados não reconhecidos
             raise ValueError(
-                "[SOMETHING WENT WRONG] Invalid Data Dimensionality Selected!"
+                "[ALGO DEU ERRADO] Dimensionalidade dos dados inválida selecionada!"
             )
 
-        # Return the sets computed
+        # Retorna os conjuntos computados
         return X_train, y_train, X_val, y_val, X_test, y_test
 
     def getAllFolds(self) -> Tuple[np.ndarray, np.ndarray]:
         """
-        # Description
-            -> This method helps get all the data regarding all folds
-        which is going to be used to create the t-SNE plot.
+        # Descrição
+            -> Este método ajuda a obter todos os dados de todos os folds
+            que serão usados para criar o gráfico t-SNE.
         -------------------------------------------------------------
-        := return: X and y sets.
+        := return: Conjuntos X e y.
         """
 
-        # Manage data
+        # Gerencia os dados
         df = self.manageData()
 
-        # Evaluate the kind of data dimensionality provided and adapt the method to it
+        # Avalia o tipo de dimensionalidade dos dados e adapta o método de extração
+        # Trata dados 1D processados
         if self.featuresToUse == "1D-Processed-MFCCs" or self.featuresToUse == "1D-Processed-Features":
-            # Define the columns of the features and the target
+            # Define as colunas das características e do alvo
             featuresCols = df.columns[2:-1]
             targetCols = df.columns[-1:]
 
-            # Split the data into X and y for train, validation and test sets
+            # Separa os dados em X e y
             X = df[featuresCols].to_numpy()
             y = df[targetCols].to_numpy()
 
         elif self.featuresToUse == "2D-Raw-MFCCs":
-            # Define the columns of the features and the target
+            # Trata dados 2D brutos (matrizes MFCC)
+            # Define as colunas das características e do alvo
             featuresCols = "MFCC"
             targetCols = df.columns[-1:]
 
-            # Split the data into X and y for train, validation and test sets
+            # Separa os dados em X e y
             X = df[featuresCols]
             y = df[targetCols].to_numpy()
 
-            # Stack the data
+            # Empilha os dados em array 3D
             X = np.stack(X)
 
         elif self.featuresToUse == "transfer":
-            # Define the columns of the features and the target
+            # Trata dados de transfer learning (embeddings pré-computados)
+            # Define as colunas das características e do alvo
             featuresCols = "embedding"
             targetCols = "target"
 
-            # Split the data into X and y for train, validation and test sets
+            # Separa os dados em X e y
             X = df[featuresCols]
             y = df[targetCols].to_numpy()
 
-            # Stack the data
+            # Empilha os embeddings em array 3D
             X = np.stack(X)
 
         else:
+            # Tratamento para tipos de dados não reconhecidos
             raise ValueError(
-                "[SOMETHING WENT WRONG] Invalid Data Dimensionality Selected!"
+                "[ALGO DEU ERRADO] Dimensionalidade dos dados inválida selecionada!"
             )
 
         return X, y
@@ -317,56 +328,52 @@ class UrbanSound8kManager:
         callbacks=lambda: [],
     ) -> Tuple[list[float], list[History], list[np.ndarray]]:
         """
-        # Description
-            -> This method allows to perform cross-validation over the UrbanSound8k dataset
-            given a compiled Model.
+        # Descrição
+            -> Este método permite realizar validação cruzada no conjunto UrbanSound8k
+            dado um modelo compilado.
         ------------------------------------------------------------------------------------
-        := param: compiledModel - Keras sequential model previously compiled.
-        := param: numberFolds - Number of Folds to perform the CV on.
-        := param: epochs - Number of iterations to train the model at each fold.
-        := param: callbacks - List of parameters that help monitor and modify the behavior of your model during training, evaluation and inference.
-        := return: A list with the performance mestrics (History) of the model at each fold.
+        := param: compiledModel - Modelo sequencial Keras previamente compilado.
+        := param: numberFolds - Número de folds para realizar a validação cruzada.
+        := param: epochs - Número de épocas para treinar o modelo em cada fold.
+        := param: callbacks - Lista de parâmetros para monitorar e modificar o comportamento do modelo durante treino, avaliação e inferência.
+        := return: Lista com as métricas de desempenho (History) do modelo em cada fold.
         """
 
-        assert 0 < numberFolds <= 10, f"invalid number of iterations: {numberFolds}"
+        assert 0 < numberFolds <= 10, f"número de iterações inválido: {numberFolds}"
 
-        # Initialize a list to store all the model's history for each fold
+        # Inicializa lista para armazenar o histórico do modelo em cada fold
         histories = []
 
-        # Initialize a list to store all the model's confusion matrices for each fold
+        # Inicializa lista para armazenar as matrizes de confusão do modelo em cada fold
         confusionMatrices = []
 
-        # Create a List to store the Folds Accuracies
+        # Lista para armazenar as acurácias balanceadas dos folds
         foldsBalancedAccuracy = []
 
-        # Perform Cross-Validation
+        # Realiza validação cruzada iterando sobre cada fold
         for testFold in range(1, numberFolds + 1):
-            # Create new instance of the Model
+            # Cria nova instância do modelo (uma nova instância para cada fold)
             compiledModel = createModel(testNumber=self.testNumber)
 
-            # Partition the data into train and validation
+            # Particiona os dados em treino e validação
             X_train, y_train, X_val, y_val, X_test, y_test = self.getTrainTestSplitFold(
                 testFold=testFold
             )
 
-            # Get the current fold model's file path and history path
-            modelFilePath = self.pathsConfig["ModelDevelopmentAndEvaluation"][
-                self.modelType
-            ][f"Test-{self.testNumber}"][f"Fold-{testFold}"]["Model"]
-            historyFilePath = self.pathsConfig["ModelDevelopmentAndEvaluation"][
-                self.modelType
-            ][f"Test-{self.testNumber}"][f"Fold-{testFold}"]["History"]
+            # Obtém o caminho do modelo e do histórico do fold atual
+            modelFilePath = self.pathsConfig["ModelDevelopmentAndEvaluation"][self.modelType][f"Test-{self.testNumber}"][f"Fold-{testFold}"]["Model"]
+            historyFilePath = self.pathsConfig["ModelDevelopmentAndEvaluation"][self.modelType][f"Test-{self.testNumber}"][f"Fold-{testFold}"]["History"]
 
-            # Check if the fold has already been computed
+            # Verifica se o fold já foi computado (reutiliza modelos previamente treinados)
             foldAlreadyComputed = os.path.exists(modelFilePath)
 
-            # Getting the model's current fold path and making sure it exists
+            # Garante que o caminho do fold do modelo existe (cria diretórios se necessário)
             modelFoldPath = Path("/".join(modelFilePath.split("/")[:-1]))
             modelFoldPath.mkdir(parents=True, exist_ok=True)
 
-            # If we have not trained the model, then we need to
+            # Se não treinou o modelo, treina agora
             if not foldAlreadyComputed:
-                # Train the model
+                # Treina o modelo com os dados de treino e validação
                 history = compiledModel.fit(
                     X_train,
                     y_train,
@@ -376,36 +383,37 @@ class UrbanSound8kManager:
                     callbacks=callbacks(),
                 )
 
-                # Save the history
+                # Salva o histórico do treinamento (perda, acurácia por época)
                 saveObject(history, filePath=historyFilePath)
 
-                # Save the Model
+                # Salva o modelo treinado
                 compiledModel.save(modelFilePath)
 
-                # Clear session
+                # Limpa a sessão do Keras para liberar memória
                 keras.backend.clear_session()
 
             else:
-                # Load the previously computed fold history
+                # Modelo já foi treinado, carrega os resultados anteriores
+                # Carrega o histórico previamente computado
                 history = loadObject(filePath=historyFilePath)
 
-                # Load the model
+                # Carrega o modelo
                 compiledModel = load_model(modelFilePath)
 
-            # Get predictions
+            # Faz previsões no conjunto de teste (converte probabilidades em classes)
             y_pred = np.argmax(compiledModel.predict(X_test), axis=1)
             y_true = np.argmax(y_test, axis=1)
 
-            # Calculate the current fold Accuracy
+            # Calcula a acurácia balanceada do fold atual (importante para datasets desbalanceados)
             currentFoldAccuracy = balanced_accuracy_score(y_true, y_pred)
 
-            # Append the current fold accuracy to the previous list
+            # Adiciona a acurácia do fold à lista
             foldsBalancedAccuracy.append(currentFoldAccuracy)
 
-            # Compute confusion matrix
+            # Computa matriz de confusão para avaliar desempenho por classe
             confusionMatrix = confusion_matrix(y_true, y_pred)
 
-            # Plotting model training performance
+            # Plota desempenho do treino e matriz de confusão do modelo atual
             plotNetworkTrainingPerformance(
                 confusionMatrix=confusionMatrix,
                 title=f"[Test-{self.testNumber}] [{self.modelType}] Fold-{testFold}",
@@ -413,30 +421,32 @@ class UrbanSound8kManager:
                 targetLabels=self.classes_,
             )
 
-            # Append results
+            # Adiciona resultados do fold à lista de resultados
             histories.append(history)
             confusionMatrices.append(confusionMatrix)
 
-        # Return the histories and the confusion matrices
+        # Retorna os históricos e as matrizes de confusão
         return np.array(foldsBalancedAccuracy), histories, confusionMatrices
 
     def plotGlobalConfusionMatrix(self, confusionMatrices: list[np.ndarray]) -> None:
         """
-        # Description
-            -> This method helps to compute and display the global confusion matrix.
+        # Descrição
+            -> Este método ajuda a calcular e exibir a matriz de confusão global.
         ----------------------------------------------------------------------------
-        := param: confusionMatrices - List with all the confusion matrices computed throughout all folds.
-        := return: None, since we are only plotting a confusion matrix.
+        := param: confusionMatrices - Lista com todas as matrizes de confusão computadas em todos os folds.
+        := return: None, pois estamos apenas plotando a matriz de confusão.
         """
 
-        # Compute the global confusion Matrix
+        # Computa a matriz de confusão global somando todas as matrizes dos folds
+        # Isso fornece uma visão geral do desempenho do modelo em todos os dados
         globalConfusionMatrix = confusionMatrices[0]
         for m in confusionMatrices[1:]:
             globalConfusionMatrix += m
 
-        # Plot the Global Confusion Matrix
+        # Plota a matriz de confusão global agregada
         plotConfusionMatrix(
             globalConfusionMatrix,
-            title="Global Confusion Matrix",
+            title="Matriz de Confusão Global",
             targetLabels=self.classes_,
         )
+

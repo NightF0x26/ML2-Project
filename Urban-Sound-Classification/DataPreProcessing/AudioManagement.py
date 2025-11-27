@@ -3,78 +3,81 @@ import numpy as np
 import pandas as pd
 from IPython import display
 
+
 def formatFilePath(audioFold:int, audioName:str) -> str:
     """
-    # Description
-        -> Creates a filepath to correctly access a audio file from the UrbanSound8K dataset.
+    # Descrição
+        -> Cria o caminho do arquivo para acessar corretamente um arquivo de áudio do dataset UrbanSound8K.
     -----------------------------------------------------------------------------------------
-    := param: audioFold - Fold where the audio sample belong to inside the dataset.
-    := param: audioName - Audio Filename inside the dataset.
-    := return: String that points to the correct file.
+    := param: audioFold - pasta ao qual a amostra de áudio pertence dentro do dataset.
+    := param: audioName - Nome do arquivo de áudio dentro do dataset.
+    := return: String que aponta para o arquivo correto.
     """
-
-    # Return the file path
+    # Retorna o caminho do arquivo de áudio no UrbanSound8K
     return f'./UrbanSound8K/audio/fold{audioFold}/{audioName}'
+
 
 def loadAudio(df_audio:pd.DataFrame, audioSliceName:int, audioDuration:int, targetSampleRate:int, usePadding:bool) -> np.ndarray:
     """
-    # Description
-        -> Loads a audio file from the dataset.
+    # Descrição
+        -> Carrega um arquivo de áudio do dataset.
     -------------------------------------------
-    := param: df_audio - Pandas DataFrame with the dataset's metadata.
-    := param: audioSliceName - Audio Identification inside the dataset.
-    := param: audioDuration - Duration to be considered of the audio.
-    := param: targetSampleRate - Target sampling rate for the audio.
-    := param: usePadding - Whether or not to perform zero padding to the resampled audio on the target sample rate.
-    := return: Audio object.
+    := param: df_audio - DataFrame do Pandas com os metadados do dataset.
+    := param: audioSliceName - Identificação do áudio dentro do dataset.
+    := param: audioDuration - Duração a ser considerada do áudio.
+    := param: targetSampleRate - Taxa de amostragem alvo para o áudio.
+    := param: usePadding - Se deve ou não realizar zero padding no áudio reamostrado na taxa alvo.
+    := return: Objeto de áudio.
     """
-    
-    # Get the audio entry
+
+    # Seleciona a entrada do áudio pelo nome do arquivo
     df_audio_selectedAudio = df_audio[df_audio['slice_file_name'] == audioSliceName]
 
-    # Get the row index of the entry
+    # Obtém o índice da linha da entrada
     idx = df_audio_selectedAudio.index.values.astype(int)[0]
 
-    # Fetch audio fold
+    # Obtém o fold do áudio
     audioFold = df_audio_selectedAudio['fold'][idx]
-    
-    # Format the File Path
+
+    # Formata o caminho do arquivo
     audioFilePath = formatFilePath(audioFold, audioSliceName)
-    
-    # Load the audio [Using standard sampling rate]
+
+    # Carrega o áudio usando a taxa de amostragem original
     audioTimeSeries, samplingRate = libr.load(audioFilePath, duration=audioDuration, sr=None)
 
-    # Resample the audio for the target sample rate
+    # Reamostra o áudio para a taxa de amostragem alvo
     audioTimeSeries = libr.resample(audioTimeSeries, orig_sr=samplingRate, target_sr=targetSampleRate)
 
-    # Perform padding on the audio, so that each time series have the same length
+    # Realiza padding no áudio para que todas as séries temporais tenham o mesmo comprimento
     if usePadding:
         audioTimeSeries = libr.util.fix_length(data=audioTimeSeries, size=audioDuration*targetSampleRate, mode='constant')
 
-    # Return the padded Audio
+    # Retorna o áudio (com padding, se aplicável)
     return audioTimeSeries
+
 
 def showcaseAudio(df_audio:pd.DataFrame, audioSliceName:int) -> display.Audio:
     """
-    # Description
-        -> Creates a simple audio player for the selected file from the dataset.
+    # Descrição
+        -> Cria um player de áudio simples para o arquivo selecionado do dataset.
     ----------------------------------------------------------------------------
-    := param: df_audio - Pandas DataFrame with the dataset's metadata.
-    := param: audioSliceName - Audio Identification inside the dataset.
-    := return: Audio object that helps listen to the selected audio file.
+    := param: df_audio - DataFrame do Pandas com os metadados do dataset.
+    := param: audioSliceName - Identificação do áudio dentro do dataset.
+    := return: Objeto de áudio que permite ouvir o arquivo selecionado.
     """
-    
-    # Get the audio entry
+
+    # Seleciona a entrada do áudio pelo nome do arquivo
     df_audio_selectedAudio = df_audio[df_audio['slice_file_name'] == audioSliceName]
 
-    # Get the row index of the entry
+    # Obtém o índice da linha da entrada
     idx = df_audio_selectedAudio.index.values.astype(int)[0]
 
-    # Fetch audio fold
+    # Obtém o fold do áudio
     audioFold = df_audio_selectedAudio['fold'][idx]
 
-    # Format the File Path
+    # Formata o caminho do arquivo
     audioFilePath = formatFilePath(audioFold, audioSliceName)
 
-    # Return the Audio
+    # Retorna o player de áudio para escutar o arquivo
     return display.Audio(audioFilePath)
+

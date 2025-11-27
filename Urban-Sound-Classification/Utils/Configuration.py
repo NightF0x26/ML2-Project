@@ -1,63 +1,63 @@
 def loadConfig() -> dict:
     """
-    # Description
-        -> This function aims to store all the configuration related parameters used inside the project.
-    ----------------------------------------------------------------------------------------------------
-    := return: Dictionary with some of the important constants/values used in the project.
+    # Descrição
+        -> Esta função visa armazenar todos os parâmetros relacionados à configuração utilizados dentro do projeto.
+    ----------------------------------------------------------------------------------------------------------------
+    := retorno: Dicionário com algumas das constantes/valores importantes utilizados no projeto.
     """
 
-    # Computing Values
-    sampleRate = 44100  # Higher rate to be able to capture high resolution audios like the ones that come from harmonic waves.
-    hopLength = round(sampleRate * 0.0125)
-    windowLength = round(sampleRate * 0.023)
-    timeSize = 4 * sampleRate // hopLength + 1
+    # Valores Computados
+    sampleRate = 44100  # Taxa mais elevada para capturar áudios de alta resolução como os que vêm de ondas harmónicas.
+    hopLength = round(sampleRate * 0.0125)  # Número de amostras para avançar entre quadros
+    windowLength = round(sampleRate * 0.023)  # Número de amostras utilizadas em cada quadro para análise de frequência
+    timeSize = 4 * sampleRate // hopLength + 1  # Número de quadros temporais após aplicar hop length e janelamento
     return {
-        "DURATION": 4,  # Length of each audio sample in the dataset.
-        "SAMPLE_RATE": sampleRate,  # Number of samples of audio taken per second when converting it from a continuous to a digital signal
-        "HOP_LENGTH": hopLength,  # The number of samples to advance between frames
-        "WINDOW_LENGTH": windowLength,  # Number of samples used in each frame for frequency analysis, or the length of the window in which the Fourier Transform is applied.
-        "N_FFT": 2**10,  # Length of the windowed signal after padding with zeros
-        "TIME_SIZE": timeSize,  # Number of time frames or segments that the audio will be divided into after applying the hop length and windowing.
-        "N_CHROMA": 12,  # Number of pitch classes (e.g., C, C#, D, etc.) in the chroma feature representation.
-        "N_MFCC": 13,  # Number of Mel-Frequency Cepstral Coefficients (MFCCs) to be extracted
+        "DURATION": 4,  # Comprimento de cada amostra de áudio no conjunto de dados.
+        "SAMPLE_RATE": sampleRate,  # Número de amostras de áudio por segundo quando convertendo de sinal contínuo para digital
+        "HOP_LENGTH": hopLength,  # Número de amostras para avançar entre quadros
+        "WINDOW_LENGTH": windowLength,  # Número de amostras utilizadas em cada quadro para análise de frequência, ou comprimento da janela na qual a Transformada de Fourier é aplicada.
+        "N_FFT": 2**10,  # Comprimento do sinal com janela após preenchimento com zeros
+        "TIME_SIZE": timeSize,  # Número de quadros temporais ou segmentos nos quais o áudio será dividido após aplicar hop length e janelamento.
+        "N_CHROMA": 12,  # Número de classes de altura (ex: C, C#, D, etc.) na representação de característica chroma.
+        "N_MFCC": 13,  # Número de Coeficientes Cepstrais de Frequência Mel (MFCCs) a serem extraídos
     }
 
 
 def createDatasetsFolderPaths(numberFolds: int) -> dict:
     """
-    # Description
-        -> This function helps configure all the paths in which we are going to store the extracted features.
-    ---------------------------------------------------------------------------------------------------------
-    := param: numberFolds -  Number of folds that are going to be considered.
-    := return: Dictionary with all the datasets paths configured.
+    # Descrição
+        -> Esta função ajuda a configurar todos os caminhos nos quais vamos armazenar as características extraídas.
+    ----------------------------------------------------------------------------------------------------------------
+    := param: numberFolds -  Número de folds que serão considerados.
+    := retorno: Dicionário com todos os caminhos dos datasets configurados.
     """
 
-    # Create a main dictionary to store all the paths
+    # Cria um dicionário principal para armazenar todos os caminhos
     datasetsPaths = {}
 
     for foldIdx in range(1, numberFolds + 1):
-        # Define the paths for the current fold
+        # Define os caminhos para o fold atual
         currentFoldDatasetsPaths = {
-            # All the Available Features to process the Audio Samples
+            # Todas as Características Disponíveis para processar as Amostras de Áudio
             "All-Raw-Features": f"./Datasets/Fold-{foldIdx}/All-Raw-Features.pkl",
-            # Files to store 1-Dimensional Features
+            # Ficheiros para armazenar Características 1-Dimensionais
             "1D-Raw-Features": f"./Datasets/Fold-{foldIdx}/1D-Raw-Features.pkl",
             "1D-Processed-Features": f"./Datasets/Fold-{foldIdx}/1D-Processed-Features.pkl",
-            # Files to store 2-Dimensional Features
+            # Ficheiros para armazenar Características 2-Dimensionais
             "2D-Raw-Features": f"./Datasets/Fold-{foldIdx}/2D-Raw-Features.pkl",
             "2D-Processed-Features": f"./Datasets/Fold-{foldIdx}/2D-Processed-Features.pkl",
-            # Files to store the MFCCs
+            # Ficheiros para armazenar os MFCCs
             "2D-Raw-MFCCs": f"./Datasets/Fold-{foldIdx}/2D-Raw-MFCCs.pkl",
             "1D-Processed-MFCCs": f"./Datasets/Fold-{foldIdx}/1D-Processed-MFCCs.pkl",
         }
 
-        # Update the main dictionary
+        # Atualiza o dicionário principal
         datasetsPaths.update({f"Fold-{foldIdx}": currentFoldDatasetsPaths})
 
-    # Add the path for transfer learning
+    # Adiciona o caminho para aprendizado por transferência
     datasetsPaths.update({"transfer": "./Datasets/transfer.pkl"})
 
-    # Return the dictionary with all the paths for the datasets
+    # Retorna o dicionário com todos os caminhos para os datasets
     return datasetsPaths
 
 
@@ -65,26 +65,26 @@ def createModelResultsFolderPaths(
     modelName: str, numberTests: int, numberFolds: int
 ) -> dict:
     """ "
-    # Description
-        -> This function helps create all the paths to store the experimental results of a given model.
-    ---------------------------------------------------------------------------------------------------
-    := param: modelName - Name of the model.
-    := param: numberTests - Number of tests that are going to be performed on the model.
-    := param: numberFolds -  Number of folds that are going to be considered.
-    := return: Dictionary wtith all the proper paths formatted for the model's experimental results.
+    # Descrição
+        -> Esta função ajuda a criar todos os caminhos para armazenar os resultados experimentais de um modelo dado.
+    ----------------------------------------------------------------------------------------------------------------
+    := param: modelName - Nome do modelo.
+    := param: numberTests - Número de testes que serão realizados no modelo.
+    := param: numberFolds -  Número de folds que serão considerados.
+    := retorno: Dicionário com todos os caminhos apropriados formatados para os resultados experimentais do modelo.
     """
 
-    # Create a main dictionary to store all the paths for the results of a model
+    # Cria um dicionário principal para armazenar todos os caminhos para os resultados de um modelo
     testsData = {}
 
-    # Iterate through the amount of tests to perform
+    # Itera pela quantidade de testes a realizar
     for testIdx in range(1, numberTests + 1):
-        # Create a dictionary for the paths of the results from each fold for the current test
+        # Cria um dicionário para os caminhos dos resultados de cada fold para o teste atual
         foldsData = {}
 
-        # Iterate through each fold
+        # Itera por cada fold
         for foldIdx in range(1, numberFolds + 1):
-            # Create the paths
+            # Cria os caminhos
             foldsData.update(
                 {
                     f"Fold-{foldIdx}": {
@@ -93,19 +93,19 @@ def createModelResultsFolderPaths(
                     }
                 }
             )
-        # Update the main dictionary
+        # Atualiza o dicionário principal
         testsData.update({f"Test-{testIdx}": foldsData})
 
-    # Return the Paths for the model experimental results
+    # Retorna os Caminhos para os resultados experimentais do modelo
     return testsData
 
 
 def loadPathsConfig() -> dict:
     """
-    # Description
-        -> This function aims to store all the path configuration related parameters used inside the project.
-    ---------------------------------------------------------------------------------------------------------
-    := return: Dictionary with some of the important file paths of the project.
+    # Descrição
+        -> Esta função visa armazenar todos os parâmetros relacionados à configuração de caminhos utilizados dentro do projeto.
+    -----------------------------------------------------------------------------------------------------------------------
+    := retorno: Dicionário com alguns dos caminhos de ficheiros importantes do projeto.
     """
     return {
         "ExploratoryDataAnalysis": "./ExperimentalResults/ExploratoryDataAnalysis",
@@ -115,7 +115,7 @@ def loadPathsConfig() -> dict:
                 modelName="MLP", numberTests=4, numberFolds=10
             ),
             "CNN": createModelResultsFolderPaths(
-                modelName="CNN", numberTests=4, numberFolds=10
+                modelName="CNN", numberTests=5, numberFolds=10
             ),
             "YAMNET": createModelResultsFolderPaths(
                 modelName="YAMNET", numberTests=4, numberFolds=10
