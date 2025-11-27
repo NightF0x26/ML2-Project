@@ -29,7 +29,7 @@ class MLP(keras.Model):
                 Dense(numClasses, activation='softmax')
             ], name=f"MLP-V{testNumber}")
         
-        elif testNumber == 3:
+        elif testNumber == 3 or testNumber == 4:
              return keras.Sequential([
                 Input(shape=input_shape),
 
