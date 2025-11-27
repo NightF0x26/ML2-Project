@@ -6,71 +6,71 @@ from .AudioManagement import (loadAudio)
         
 def extractAllRawFeatures(audio_df:pd.DataFrame, fold:int, config:dict, pathsConfig:dict) -> None:
     """
-    # Description
-        -> This function helps extract all the available features 
-        from the audio samples of the selected Fold on the dataset
+    # Descrição
+        -> Esta função ajuda a extrair todas as características disponíveis
+        das amostras de áudio do Fold selecionado no conjunto de dados
     --------------------------------------------------------------
-    := param: audio_df - Pandas Dataframe with the UrbamSound8K dataset metadata.
-    := param: fold - Fold of the audios that we want to perform feature extraction on.
-    := param: config - Dictionary with Constants used in audio processing throughout the project.
-    := param: pathsConfig - Dictionary with filepaths to help organize the results of the project.
-    := return: None, since we are merely extracting data.
+    := param: audio_df - DataFrame do Pandas com os metadados do conjunto UrbamSound8K.
+    := param: fold - Fold dos áudios para os quais queremos extrair características.
+    := param: config - Dicionário com constantes usadas no processamento de áudio ao longo do projeto.
+    := param: pathsConfig - Dicionário com caminhos de arquivos para organizar os resultados do projeto.
+    := return: None, pois estamos apenas extraindo dados.
     """
 
-    # Check if the dataframe has already been computed
+    # Verifica se o dataframe já foi computado
     if not os.path.exists(pathsConfig['Datasets'][f'Fold-{fold}']['All-Raw-Features']):
-        # Initialize a List to store the extracted content
+        # Inicializa uma lista para armazenar o conteúdo extraído
         data = []
 
-        # Get the audio filenames from the selected fold
+        # Obtém os nomes dos arquivos de áudio do fold selecionado
         foldAudios = audio_df[audio_df['fold'] == fold]['slice_file_name'].to_numpy()
 
-        # Iterate through all the audios inside the selected fold
+        # Itera por todos os áudios dentro do fold selecionado
         for audioFileName in foldAudios:
-            # Load the Audio
+            # Carrega o áudio
             audio = loadAudio(df_audio=audio_df, audioSliceName=audioFileName, audioDuration=config['DURATION'], targetSampleRate=config['SAMPLE_RATE'], usePadding=True)
     
-            # [Compute Features]
+            # [Extrai Características]
 
-            # [1-Dimensional Features]
-            # Zero Crossing Rate
+            # [Características 1-Dimensionais]
+            # Taxa de Cruzamento por Zero - Mede a taxa de mudança de sinal no áudio
             zeroCrossingRate = librosa.feature.zero_crossing_rate(y=audio)[0]
 
-            # Spectral Centroid
+            # Centroide Espectral - Centro de massa do espectro
             spectralCentroid = librosa.feature.spectral_centroid(y=audio, sr=config['SAMPLE_RATE'])[0]
 
-            # Spectral Bandwidth
+            # Largura de Banda Espectral - Largura da banda de frequências principais
             spectralBandwidth = librosa.feature.spectral_bandwidth(y=audio, sr=config['SAMPLE_RATE'])[0]
 
-            # Spectral Flatness
+            # Planicidade Espectral - Medida de quanto o espectro é plano ou pontiagudo
             spectralFlatness = librosa.feature.spectral_flatness(y=audio)[0]
 
-            # Spectral Roll-off
+            # Roll-off Espectral - Frequência abaixo da qual está concentrada a energia do espectro
             spectralRolloff = librosa.feature.spectral_rolloff(y=audio, sr=config['SAMPLE_RATE'])[0]
 
-            # RMS Energy
+            # Energia RMS - Raiz da Média Quadrática (Root Mean Square) da amplitude
             rmsEnergy = librosa.feature.rms(y=audio)[0]
 
-            # [2-Dimensional Features]
-            # MFCCs
+            # [Características 2-Dimensionais]
+            # MFCCs - Coeficientes de Frequência Mel Cepstral (baseados na percepção auditiva humana)
             mfcc = librosa.feature.mfcc(y=audio, sr=config['SAMPLE_RATE'], n_mfcc=config['N_MFCC'])
             
-            # Chroma STFT
+            # Chroma STFT - Representação de energia em 12 classes de pitch
             chromaSTFT = librosa.feature.chroma_stft(y=audio, n_chroma=config['N_CHROMA'], sr=config['SAMPLE_RATE'], n_fft=config['N_FFT'], hop_length=config['HOP_LENGTH'], win_length=config['WINDOW_LENGTH'])
 
-            # Mel Spectrogram
+            # Espectrograma Mel - Representação tempo-frequência da energia no espaço Mel
             melSpectrogram = librosa.feature.melspectrogram(y=audio, sr=config['SAMPLE_RATE'])
 
-            # Spectral Contrast
+            # Contraste Espectral - Medida de diferença entre os picos e vales do espectro
             spectralContrast = librosa.feature.spectral_contrast(y=audio, sr=config['SAMPLE_RATE'])
 
-            # Compute and append the extracted features to the data list
+            # Computa e adiciona as características extraídas à lista de dados
             data.append({
-                # Audio Details
+                # Detalhes do Áudio
                 'audio':audioFileName,
                 'fold':fold,
 
-                # 1-Dimensional Features
+                # Características 1-Dimensionais
                 'Zero-Crossing Rate':zeroCrossingRate,
                 'Spectral Centroid':spectralCentroid,
                 'Spectral Bandwidth':spectralBandwidth,
@@ -78,76 +78,77 @@ def extractAllRawFeatures(audio_df:pd.DataFrame, fold:int, config:dict, pathsCon
                 'Spectral Roll-off':spectralRolloff,
                 'RMS Energy':rmsEnergy,
                 
-                # 2-Dimensional Features
+                # Características 2-Dimensionais
                 'MFCC':mfcc,
                 'Chroma STFT':chromaSTFT,
                 'Mel Spectrogram':melSpectrogram,
                 'Spectral Contrast':spectralContrast,
 
-                # Target
+                # Alvo - Classe de som urbano
                 'target':audio_df[audio_df['slice_file_name'] == audioFileName]['class'].to_numpy()[0]
             })
 
-        # Create a DataFrame with the collected data
+        # Cria um DataFrame com os dados coletados
         df = pd.DataFrame(data)
 
-        # Save the Dataframe
+        # Salva o DataFrame em formato pickle para carregamento rápido posterior
         df.to_pickle(pathsConfig['Datasets'][f'Fold-{fold}']['All-Raw-Features'])
 
 def extractRawFeatures1D(audio_df:pd.DataFrame, fold:int, config:dict, pathsConfig:dict) -> None:
     """
-    # Description
-        -> This function helps extract all the raw 1D features 
-        from the audio samples of the selected Fold on the dataset
-        as well as normalizing them and leaving them ready to be used.
+    # Descrição
+        -> Esta função ajuda a extrair todas as características 1D brutas
+        das amostras de áudio do Fold selecionado no conjunto de dados,
+        além de normalizá-las e deixá-las prontas para uso.
     ------------------------------------------------------------------
-    := param: audio_df - Pandas Dataframe with the UrbamSound8K dataset metadata.
-    := param: fold - Fold of the audios that we want to perform feature extraction on.
-    := param: config - Dictionary with Constants used in audio processing throughout the project.
-    := param: pathsConfig - Dictionary with filepaths to help organize the results of the project.
-    := return: None, since we are merely extracting data.
+    := param: audio_df - DataFrame do Pandas com os metadados do conjunto UrbamSound8K.
+    := param: fold - Fold dos áudios para os quais queremos extrair características.
+    := param: config - Dicionário com constantes usadas no processamento de áudio ao longo do projeto.
+    := param: pathsConfig - Dicionário com caminhos de arquivos para organizar os resultados do projeto.
+    := return: None, pois estamos apenas extraindo dados.
     """
 
-    # Check if the dataframe has already been computed
+    # Verifica se o dataframe já foi computado
     if not os.path.exists(pathsConfig['Datasets'][f'Fold-{fold}']['1D-Raw-Features']):
-        # Initialize a List to store the extracted content
+        # Inicializa uma lista para armazenar o conteúdo extraído
         data = []
 
-        # Get the audio filenames from the selected fold
+        # Obtém os nomes dos arquivos de áudio do fold selecionado
         foldAudios = audio_df[audio_df['fold'] == fold]['slice_file_name'].to_numpy()
 
-        # Iterate through all the audios inside the selected fold
+        # Itera por todos os áudios dentro do fold selecionado
         for audioFileName in foldAudios:
-            # Load the Audio
+            # Carrega o áudio
             audio = loadAudio(df_audio=audio_df, audioSliceName=audioFileName, audioDuration=config['DURATION'], targetSampleRate=config['SAMPLE_RATE'], usePadding=True)
     
-            # Compute features
-            # [1D Features]
-            # Zero Crossing Rate
+            # Extrai características
+            # [Características 1D]
+
+            # Taxa de Cruzamento por Zero - Mede a taxa de mudança de sinal no áudio
             zeroCrossingRate = librosa.feature.zero_crossing_rate(y=audio)[0]
 
-            # Spectral Centroid
+            # Centroide Espectral - Centro de massa do espectro
             spectralCentroid = librosa.feature.spectral_centroid(y=audio, sr=config['SAMPLE_RATE'])[0]
 
-            # Spectral Bandwidth
+            # Largura de Banda Espectral - Largura da banda de frequências principais
             spectralBandwidth = librosa.feature.spectral_bandwidth(y=audio, sr=config['SAMPLE_RATE'])[0]
 
-            # Spectral Flatness
+            # Planicidade Espectral - Medida de quanto o espectro é plano ou pontiagudo
             spectralFlatness = librosa.feature.spectral_flatness(y=audio)[0]
 
-            # Spectral Roll-off
+            # Roll-off Espectral - Frequência abaixo da qual está concentrada a energia do espectro
             spectralRolloff = librosa.feature.spectral_rolloff(y=audio, sr=config['SAMPLE_RATE'])[0]
 
-            # RMS Energy
+            # Energia RMS - Raiz da Média Quadrática (Root Mean Square) da amplitude
             rmsEnergy = librosa.feature.rms(y=audio)[0]
 
-            # Append the extracted features to the data list
+            # Adiciona as características extraídas à lista de dados
             data.append({
-                # Audio Details
+                # Detalhes do Áudio
                 'audio':audioFileName,
                 'fold':fold,
 
-                # 1 Dimensional Features
+                # Características 1D
                 'Zero-Crossing Rate': zeroCrossingRate,
                 'Spectral Centroid': spectralCentroid,
                 'Spectral Bandwidth':spectralBandwidth,
@@ -155,157 +156,161 @@ def extractRawFeatures1D(audio_df:pd.DataFrame, fold:int, config:dict, pathsConf
                 'Spectral Roll-off':spectralRolloff,
                 'RMS Energy':rmsEnergy,
 
-                # Target
+                # Alvo - Classe de som urbano
                 'target':audio_df[audio_df['slice_file_name'] == audioFileName]['class'].to_numpy()[0]
             })
 
-        # Create a DataFrame with the collected data
+        # Cria um DataFrame com os dados coletados
         df = pd.DataFrame(data)
 
-        # Save the Dataframe
+        # Salva o DataFrame em formato pickle para carregamento rápido posterior
         df.to_pickle(pathsConfig['Datasets'][f'Fold-{fold}']['1D-Raw-Features'])
 
 def extractRawFeatures2D(audio_df:pd.DataFrame, fold:int, config:dict, pathsConfig:dict) -> None:
     """
-    # Description
-        -> This function helps extract all the raw 2D features 
-        from the audio samples of the selected Fold on the dataset
-        as well as normalizing them and leaving them ready to be used.
+    # Descrição
+        -> Esta função ajuda a extrair todas as características 2D brutas
+        das amostras de áudio do Fold selecionado no conjunto de dados,
+        além de normalizá-las e deixá-las prontas para uso.
     ------------------------------------------------------------------
-    := param: audio_df - Pandas Dataframe with the UrbamSound8K dataset metadata.
-    := param: fold - Fold of the audios that we want to perform feature extraction on.
-    := param: config - Dictionary with Constants used in audio processing throughout the project.
-    := param: pathsConfig - Dictionary with filepaths to help organize the results of the project.
-    := return: None, since we are merely extracting data.
+    := param: audio_df - DataFrame do Pandas com os metadados do conjunto UrbamSound8K.
+    := param: fold - Fold dos áudios para os quais queremos extrair características.
+    := param: config - Dicionário com constantes usadas no processamento de áudio ao longo do projeto.
+    := param: pathsConfig - Dicionário com caminhos de arquivos para organizar os resultados do projeto.
+    := return: None, pois estamos apenas extraindo dados.
     """
 
-    # Check if the dataframe has already been computed
+    # Verifica se o dataframe já foi computado
     if not os.path.exists(pathsConfig['Datasets'][f'Fold-{fold}']['2D-Raw-Features']):
-        # Initialize a List to store the extracted content
+        # Inicializa uma lista para armazenar o conteúdo extraído
         data = []
 
-        # Get the audio filenames from the selected fold
+        # Obtém os nomes dos arquivos de áudio do fold selecionado
         foldAudios = audio_df[audio_df['fold'] == fold]['slice_file_name'].to_numpy()
 
-        # Iterate through all the audios inside the selected fold
+        # Itera por todos os áudios dentro do fold selecionado
         for audioFileName in foldAudios:
-            # Load the Audio
+            # Carrega o áudio
             audio = loadAudio(df_audio=audio_df, audioSliceName=audioFileName, audioDuration=config['DURATION'], targetSampleRate=config['SAMPLE_RATE'], usePadding=True)
     
-            # [2-Dimensional Features]
-            # MFCCs
+            # [Características 2-Dimensionais]
+
+            # MFCCs - Coeficientes de Frequência Mel Cepstral (baseados na percepção auditiva humana)
             mfcc = librosa.feature.mfcc(y=audio, sr=config['SAMPLE_RATE'], n_mfcc=config['N_MFCC'])
             
-            # Chroma STFT
+            # Chroma STFT - Representação de energia em 12 classes de pitch
             chromaSTFT = librosa.feature.chroma_stft(y=audio, n_chroma=config['N_CHROMA'], sr=config['SAMPLE_RATE'], n_fft=config['N_FFT'], hop_length=config['HOP_LENGTH'], win_length=config['WINDOW_LENGTH'])
 
-            # Mel Spectrogram
+            # Espectrograma Mel - Representação tempo-frequência da energia no espaço Mel
             melSpectrogram = librosa.feature.melspectrogram(y=audio, sr=config['SAMPLE_RATE'])
 
-            # Spectral Contrast
+            # Contraste Espectral - Medida de diferença entre os picos e vales do espectro
             spectralContrast = librosa.feature.spectral_contrast(y=audio, sr=config['SAMPLE_RATE'])
 
-            # Compute and append the extracted features to the data list
+            # Computa e adiciona as características extraídas à lista de dados
             data.append({
-                # Audio Details
+                # Detalhes do Áudio
                 'audio':audioFileName,
                 'fold':fold,
                 
-                # 2-Dimensional Features
+                # Características 2-Dimensionais
                 'MFCC':mfcc,
                 'Chroma STFT':chromaSTFT,
                 'Mel Spectrogram':melSpectrogram,
                 'Spectral Contrast':spectralContrast,
 
-                # Target
+                # Alvo - Classe de som urbano
                 'target':audio_df[audio_df['slice_file_name'] == audioFileName]['class'].to_numpy()[0]
             })
 
-        # Create a DataFrame with the collected data
+        # Cria um DataFrame com os dados coletados
         df = pd.DataFrame(data)
 
-        # Save the Dataframe
+        # Salva o DataFrame em formato pickle para carregamento rápido posterior
         df.to_pickle(pathsConfig['Datasets'][f'Fold-{fold}']['2D-Raw-Features'])
         
 def getFeaturesDetails(df:pd.DataFrame, intervalStep:int) -> list[dict]:
         """
-        # Description
-            -> Based on the extracted features from the first audio sample, it computes the amount of
-            components we need to use to partition each feature while considering the possible residue.
+        # Descrição
+            -> Com base nas características extraídas da primeira amostra de áudio, calcula a quantidade de
+            componentes que precisamos para particionar cada característica considerando o possível resíduo.
         -----------------------------------------------------------------------------------------------
-        := param: df - Pandas DataFrame in which we want to extract the features's details.
-        := param: stepInterval - Window Size of the segmentation we want to consider when creating components for the extracted features.
-        := return: A list with all the data regarding the data formating on the next step.
+        := param: df - DataFrame do Pandas do qual queremos extrair os detalhes das características.
+        := param: stepInterval - Tamanho da janela de segmentação que queremos considerar ao criar componentes para as características extraídas.
+        := return: Uma lista com todos os dados sobre o formato dos dados na próxima etapa.
         """
 
-        # Selecting the important columns to extract the details from
+        # Seleciona as colunas importantes para extrair os detalhes
         cols = df.columns[2:len(df.columns) - 2]
 
-        # List to store the details of the columns to process
+        # Lista para armazenar os detalhes das colunas a processar
         columnsDetails = []
 
-        # Iterate over the features of the DataFrame
+        # Itera sobre as características do DataFrame
         for feature in cols:
-            # Analyse the shape of the array of the current feature
+            # Analisa o formato do array da característica atual
             length = len(df.iloc[0][feature])
 
-            # Calculate the number of components for the current features
+            # Calcula o número de componentes para a característica atual
             numComponents = length // intervalStep
             residueSize = length / intervalStep
 
-            # Update the initial list with the computed data
+            # Atualiza a lista inicial com os dados calculados
             columnsDetails.append({
                 'feature':feature.replace('-', '_').replace(' ', '_'),
                 'totalComponents':numComponents,
                 'residueSize':residueSize
             })
         
+        # Retorna a lista com os detalhes de todas as características
         return columnsDetails
 
 def processRawFeatures(fold:int, intervalStep:int, featuresDimensionality:str, pathsConfig:dict) -> None:
     """
-    # Description
-        -> This Method allows to process the previously extracted raw features into
-        multiple components based on small partitions of the data and a couple metrics.
+    # Descrição
+        -> Este método permite processar as características brutas extraídas anteriormente em
+        múltiplos componentes com base em pequenas partições dos dados e algumas métricas.
     -------------------------------------------------------------------------------------
-    := param: fold - Fold in which we want to process the extracted features.
-    := param: intervalStep - Window Size of the segmentation we want to consider when creating components for the extracted features.
-    := param: featureDimensionality - Dimensionality of the data to process (either "1D" or "2D").
-    := return: None, since we are only updating one attribute of the class.
+    := param: fold - Fold no qual queremos processar as características extraídas.
+    := param: intervalStep - Tamanho da janela de segmentação que queremos considerar ao criar componentes para as características extraídas.
+    := param: featureDimensionality - Dimensionalidade dos dados a processar ("1D" ou "2D").
+    := return: None, pois estamos apenas atualizando um atributo da classe.
     """
 
-    # Verify the integrity of the feature dimensionality chosen
+    # Verifica a integridade da dimensionalidade escolhida
     if featuresDimensionality not in ["1D", "2D"]:
-        raise ValueError("Invalid Feature Dimensionality Chosen")
+        raise ValueError("Dimensionalidade de característica inválida escolhida")
 
-    # Create a variable for the processed dataframe
+    # Cria uma variável para o dataframe processado
     processed_df = None
 
-    # If the DataFrame with the processed data has not been computed
+    # Se o DataFrame com os dados processados ainda não foi computado
     if not os.path.exists(pathsConfig['Datasets'][f'Fold-{fold}'][f'{featuresDimensionality}-Processed-Features']):
 
-        # Load the dataset with the raw features and select the important columnhs
+        # Carrega o conjunto de dados com as características brutas e seleciona as colunas importantes
         df = pd.read_pickle(pathsConfig['Datasets'][f'Fold-{fold}'][f'{featuresDimensionality}-Raw-Features'])
         featuresToProcess = df.columns[2:len(df.columns) - 2]
 
-        # Fetch the Column's Details
+        # Busca os detalhes das colunas
         columnDetails = getFeaturesDetails(df, intervalStep)
 
-        # Iterate row by row and process each extracted vector to get mean, std, ... to obtain multiple columns [MEAN_F1, STD_F1, MEAN_F2, STD_F2, ...]
+        # Itera linha por linha e processa cada vetor extraído para obter estatísticas
+        # Resultado: múltiplas colunas [MEAN_F1, MEDIAN_F1, STD_F1, MEAN_F2, MEDIAN_F2, STD_F2, ...]
         for index, row in df.iterrows():
-            # Create a new dictionary for a new line in the Dataframe
+            # Cria um novo dicionário para uma nova linha no DataFrame
             audioSampleData = {'audio':row['audio'], 'fold':fold}
 
-            # Create a featureIdx to keep track of the current feature being analysed
+            # Cria um índice de característica para acompanhar a característica atual analisada
             featureIdx = 0
 
+            # Processamento baseado na dimensionalidade das características
             if featuresDimensionality == "1D":
-                # Iterate through the 1-Dimensional Features
+                # Itera pelas características 1D
                 for feature in featuresToProcess:
-                    # Fetch the array in the current cell
+                    # Busca o array na célula atual
                     featureArray = row[feature]
 
-                    # Create the components for the 1-Dimensional Data
+                    # Cria os componentes para os dados 1D
                     for currentComponent in range(1, columnDetails[featureIdx]['totalComponents'] + 1):
                         if currentComponent == columnDetails[featureIdx]['totalComponents'] - 1: 
                             audioSampleData.update({
@@ -320,118 +325,119 @@ def processRawFeatures(fold:int, intervalStep:int, featuresDimensionality:str, p
                                 f"{columnDetails[featureIdx]['feature']}_{currentComponent}_Std":np.std(featureArray[(currentComponent - 1)*intervalStep : currentComponent*intervalStep])
                             })
                     
-                    # Increment the index of the feature being processed
+                    # Incrementa o índice da característica sendo processada
                     featureIdx += 1
             
             elif featuresDimensionality == "2D":
-                # Iterate through the 2-Dimensional Features
+                # Itera pelas características 2D
                 for feature in featuresToProcess:
-                    # Fetch and Convert the array in the current cell
+                    # Busca e converte o array na célula atual
                     featureArray = np.mean(row[feature], axis=1)
 
-                    # Update the audio Sample Data with all the components previously calculated during feature extraction
+                    # Atualiza os dados da amostra de áudio com todos os componentes calculados previamente durante a extração de características
                     for componentIdx, component in enumerate(featureArray):
                         audioSampleData.update({
                             f"{columnDetails[featureIdx]['feature']}_{componentIdx}":component
                         })
                     
-                    # Increment the index of the feature being processed
+                    # Incrementa o índice da característica sendo processada
                     featureIdx += 1
 
-            # Add the target Label
+            # Adiciona o rótulo alvo
             audioSampleData.update({
                 'target':row['target']
             })
 
-            # Check if we already have a DataFrame
+            # Verifica se já temos um DataFrame
             if processed_df is None:
-                # Create a new one from zero
+                # Cria um novo do zero
                 processed_df = pd.DataFrame([audioSampleData])
             else:
-                # Create a new DataFram with the new processed audio entry
+                # Cria um novo DataFrame com a nova entrada de áudio processada
                 newLine = pd.DataFrame([audioSampleData])
 
-                # Concatenate the new DataFrame with the previous one
+                # Concatena o novo DataFrame com o anterior
                 processed_df = pd.concat([processed_df, newLine], ignore_index=True)
         
-        # Save the Processed data
+        # Salva os dados processados em formato pickle para carregamento rápido posterior
         processed_df.to_pickle(pathsConfig['Datasets'][f'Fold-{fold}'][f'{featuresDimensionality}-Processed-Features'])
 
 def extractMFCCs(audio_df:pd.DataFrame, raw:bool, fold:int, config:dict, pathsConfig:dict) -> None:
     """
-    # Description
-        -> This function helps extract the MFCCs from audio samples 
-        of the selected Fold on the dataset.
+    # Descrição
+        -> Esta função ajuda a extrair os MFCCs das amostras de áudio
+        do Fold selecionado no conjunto de dados.
     --------------------------------------------------------------------
-    := param: audio_df - Pandas Dataframe with the UrbamSound8K dataset metadata.
-    := param: raw - Boolean Value that determines whether or not we are to work with raw data.
-    := param: fold - Fold of the audios that we want to perform feature extraction on.
-    := param: config - Dictionary with Constants used in audio processing throughout the project.
-    := param: pathsConfig - Dictionary with filepaths to help organize the results of the project.
-    := return: None, since we are merely extracting data.
+    := param: audio_df - DataFrame do Pandas com os metadados do conjunto UrbamSound8K.
+    := param: raw - Valor booleano que determina se vamos trabalhar com dados brutos ou não.
+    := param: fold - Fold dos áudios para os quais queremos extrair características.
+    := param: config - Dicionário com constantes usadas no processamento de áudio ao longo do projeto.
+    := param: pathsConfig - Dicionário com caminhos de arquivos para organizar os resultados do projeto.
+    := return: None, pois estamos apenas extraindo dados.
     """
     
-    # Define a Default Value for the raw boolean
+    # Define um valor padrão para o booleano raw
     raw = False if raw is None else raw
 
-    # Define file path
+    # Define o caminho do arquivo baseado no tipo de dados (raw ou processado)
     if raw:
         mfccsFilePath = pathsConfig['Datasets'][f'Fold-{fold}']['2D-Raw-MFCCs']
     else:
         mfccsFilePath = pathsConfig['Datasets'][f'Fold-{fold}']['1D-Processed-MFCCs']
 
-    # Check if the dataframe has already been computed
+    # Verifica se o dataframe já foi computado
     if not os.path.exists(mfccsFilePath):
-        # Initialize a List to store the extracted content
+        # Inicializa uma lista para armazenar o conteúdo extraído
         data = []
 
-        # Get the audio filenames from the selected fold
+        # Obtém os nomes dos arquivos de áudio do fold selecionado
         foldAudios = audio_df[audio_df['fold'] == fold]['slice_file_name'].to_numpy()
 
-        # Iterate through all the audios inside the selected fold
+        # Itera por todos os áudios dentro do fold selecionado
         for audioFileName in foldAudios:
-            # Load the Audio
+            # Carrega o áudio
             audio = loadAudio(df_audio=audio_df, audioSliceName=audioFileName, audioDuration=config['DURATION'], targetSampleRate=config['SAMPLE_RATE'], usePadding=True)
     
-            # Define a dictionary for the current audio data
+            # Define um dicionário para os dados do áudio atual
             audioData = {
-                # Audio Details
+                # Detalhes do Áudio
                 'audio':audioFileName,
                 'fold':fold,
             }
 
-            # Compute the mfccs
+            # Computa e processa os MFCCs baseado no tipo de dados
             if raw: 
-                # Raw Data
+                # Dados brutos - Mantém a forma completa 2D
                 mfcc = librosa.feature.mfcc(y=audio, sr=config['SAMPLE_RATE'], n_mfcc=config['N_MFCC'])
 
-                # Update the previous audio Data
+                # Atualiza os dados do áudio
                 audioData.update({
                     # MFCC
                     'MFCC':mfcc,
                 })
 
             else: 
-                # Mean on each coefficient
+                # Dados processados - Calcula a média de cada coeficiente ao longo do tempo
                 mfcc = np.mean(librosa.feature.mfcc(y=audio, sr=config['SAMPLE_RATE'], n_mfcc=config['N_MFCC']), axis=1)
 
-                # Update the audio Sample Data with all the components of the MFCCs (each coeficient's mean)
+                # Atualiza os dados da amostra de áudio com todos os componentes dos MFCCs
                 for componentIdx, component in enumerate(mfcc):
                     audioData.update({
                         f"MFCC_{componentIdx}":component
                     })
 
-            # Add the target
+            # Adiciona o rótulo alvo (classe de som urbano)
             audioData.update({
-                # Target
+                # Alvo
                 'target':audio_df[audio_df['slice_file_name'] == audioFileName]['class'].to_numpy()[0]
             })
 
-            # Append the audio data to the previous audio's list
+            # Adiciona os dados do áudio à lista
             data.append(audioData)
 
-        # Create a DataFrame with the collected data
+        # Cria um DataFrame com os dados coletados
         df = pd.DataFrame(data)
 
-        # Save the Dataframe
+        # Salva o DataFrame em formato pickle para carregamento rápido posterior
         df.to_pickle(mfccsFilePath)
+

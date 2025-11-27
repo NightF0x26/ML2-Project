@@ -1,8 +1,9 @@
-# This Python Package contains code utilized during Exploratory Data Analysis and Data Preprocessing phases.
+# Este pacote Python contém código utilizado durante as fases de Análise Exploratória de Dados e Pré-processamento de Dados.
 
-# Defining which submodules to import when using from <package> import *
+# Definindo quais submódulos importar ao usar from <package> import *
 __all__ = ["formatFilePath", "loadAudio",
            "plotFeatureDistribution"]
 
 from .AudioManagement import (formatFilePath, loadAudio)
 from .DataVisualization import (plotFeatureDistribution)
+

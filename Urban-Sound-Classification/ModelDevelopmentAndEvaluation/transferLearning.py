@@ -12,14 +12,14 @@ YAMNET_SAMPLE_RATE = 16_000
 
 
 def createEmbeddingsFaster(df: pd.DataFrame) -> tf.data.Dataset:
-    # Load config
+    # Carrega configuração
     config = loadConfig()
 
     # Download YAMNET
     yamnet_model_handle = "https://tfhub.dev/google/yamnet/1"
     yamnet_model = hub.load(yamnet_model_handle)
 
-    # Add full path name
+    # Adiciona nome de caminho completo
     df["full_filename"] = df[["slice_file_name", "fold"]].apply(
         lambda row: formatFilePath(row["fold"], row["slice_file_name"]), axis=1
     )
@@ -43,6 +43,18 @@ def createEmbeddingsFaster(df: pd.DataFrame) -> tf.data.Dataset:
 def createTransferLearning(
     hiddenLayers: List[int], dropout: float = 0.0, regularization=None, numClasses=10
 ):
+    """
+    Cria modelo de transferência de aprendizado com camadas densas personalizadas.
+    
+    Args:
+        hiddenLayers: Lista com o número de neurônios em cada camada oculta
+        dropout: Taxa de dropout para regularização (padrão: 0.0)
+        regularization: Regularizador de kernel para as camadas densas
+        numClasses: Número de classes de saída (padrão: 10)
+        
+    Returns:
+        Modelo Keras Sequential para classificação
+    """
     layers = [
         tf.keras.layers.Input(shape=(1024,), dtype=tf.float32, name="input_embedding")
     ]

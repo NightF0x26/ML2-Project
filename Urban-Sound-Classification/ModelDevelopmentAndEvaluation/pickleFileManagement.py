@@ -1,44 +1,45 @@
+# Módulo para gerenciar serialização e desserialização de objetos Python usando pickle
 import pickle
 
 def saveObject(objectObtained:object=None, filePath:str=None) -> None:
     """
-    # Description
-        -> Saves the best estimator found (passed onto the function).
+    # Descrição
+        -> Salva o melhor estimador encontrado (passado para a função).
     -----------------------------------------------------------------    
-    Parameters:
-    := param: objectObtained - Object to store in a pickle file.
-    := param: filePath - File path to the estimator.
-    := return: None, since we are only saving an estimator.
+    Parâmetros:
+    := param: objectObtained - Objeto para armazenar em um ficheiro pickle.
+    := param: filePath - Caminho do ficheiro para o estimador.
+    := retorno: None, pois estamos apenas salvando um estimador.
     """
 
-    # Check if a estimator was provided
+    # Verifica se um estimador foi fornecido
     if objectObtained is None:
-        raise ValueError("Missing a instance of a object to save!")
+        raise ValueError("Faltando uma instância de objeto para salvar!")
     
-    # Check if the path is valid
+    # Verifica se o caminho é válido
     if filePath is None:
-        raise ValueError("Invalid Path provided!")
+        raise ValueError("Caminho inválido fornecido!")
 
-    # Save the best estimator
+    # Salva o melhor estimador em formato binário usando pickle
     with open(filePath, 'wb') as f:
         pickle.dump(objectObtained, f)
 
 def loadObject(filePath:str=None) -> object:
     """
-    # Description
-        -> Loads a previously saved object.
+    # Descrição
+        -> Carrega um objeto previamente salvo.
     ----------------------------------------------
-    := param: filePath - File path to the object saved.
-    := return: The stored object.
+    := param: filePath - Caminho do ficheiro do objeto salvo.
+    := retorno: O objeto armazenado.
     """
 
-    # Check if the path is valid
+    # Verifica se o caminho é válido
     if filePath is None:
-        raise ValueError("Invalid Path provided!")
+        raise ValueError("Caminho inválido fornecido!")
 
-    # Load the best estimator
+    # Carrega o objeto do ficheiro em formato binário usando pickle
     with open(filePath, 'rb') as f:
         objectObtained = pickle.load(f)
 
-    # Return the best estimator
+    # Retorna o objeto carregado
     return objectObtained

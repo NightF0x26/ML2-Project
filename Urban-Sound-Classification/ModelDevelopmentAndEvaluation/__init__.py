@@ -1,6 +1,7 @@
-# This Python Package contains utility code used to develop the Deep Learning Algorithms
+# Este Pacote Python contém código utilitário utilizado para desenvolver os Algoritmos de Aprendizado Profundo
 
-# Defining which submodules to import when using from <package> import *
+# Definindo quais submódulos importar ao usar from <package> import *
 __all__ = []
 
+# Importa todos os módulos de desenvolvimento de modelos CNN
 from .CNN import *
