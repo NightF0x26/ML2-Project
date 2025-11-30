@@ -334,7 +334,7 @@ class UrbanSound8kManager:
         ------------------------------------------------------------------------------------
         := param: compiledModel - Modelo sequencial Keras previamente compilado.
         := param: numberFolds - Número de folds para realizar a validação cruzada.
-        := param: epochs - Número de épocas para treinar o modelo em cada fold.
+        := param: epochs - Número de períodos para treinar o modelo em cada fold.
         := param: callbacks - Lista de parâmetros para monitorar e modificar o comportamento do modelo durante treino, avaliação e inferência.
         := return: Lista com as métricas de desempenho (History) do modelo em cada fold.
         """
@@ -347,7 +347,7 @@ class UrbanSound8kManager:
         # Inicializa lista para armazenar as matrizes de confusão do modelo em cada fold
         confusionMatrices = []
 
-        # Lista para armazenar as acurácias balanceadas dos folds
+        # Lista para armazenar as exatidão balanceadas dos folds
         foldsBalancedAccuracy = []
 
         # Realiza validação cruzada iterando sobre cada fold
@@ -383,7 +383,7 @@ class UrbanSound8kManager:
                     callbacks=callbacks(),
                 )
 
-                # Salva o histórico do treinamento (perda, acurácia por época)
+                # Salva o histórico do treinamento (perda, exatidão por Período)
                 saveObject(history, filePath=historyFilePath)
 
                 # Salva o modelo treinado
@@ -404,10 +404,10 @@ class UrbanSound8kManager:
             y_pred = np.argmax(compiledModel.predict(X_test), axis=1)
             y_true = np.argmax(y_test, axis=1)
 
-            # Calcula a acurácia balanceada do fold atual (importante para datasets desbalanceados)
+            # Calcula a exatidão balanceada do fold atual (importante para datasets desbalanceados)
             currentFoldAccuracy = balanced_accuracy_score(y_true, y_pred)
 
-            # Adiciona a acurácia do fold à lista
+            # Adiciona a exatidão do fold à lista
             foldsBalancedAccuracy.append(currentFoldAccuracy)
 
             # Computa matriz de confusão para avaliar desempenho por classe

@@ -29,13 +29,13 @@ def plotNetworkTrainingPerformance(
     """
     # Descrição
         -> Esta função ajuda a visualizar o desempenho da rede
-        durante o treino através da variação da loss e da acurácia.
-        Plota 3 visualizações: acurácia, loss e matriz de confusão.
+        durante o treino através da variação da perda e da Exatidão.
+        Plota 3 visualizações: Exatidão, perda e matriz de confusão.
     
     # Parâmetros
         -> confusionMatrix: Matriz de confusão obtida do modelo fornecido
         -> title: Título principal para o conjunto de gráficos
-        -> trainHistory: Dados do histórico de treino (épocas, acurácia, loss)
+        -> trainHistory: Dados do histórico de treino (períodos, Exatidão, perda)
         -> targetLabels: Rótulos alvo do conjunto UrbanSound8k
     
     # Retorno
@@ -48,23 +48,23 @@ def plotNetworkTrainingPerformance(
     # Define o título geral para toda a figura
     fig.suptitle(title, fontsize=16, fontweight="bold")
 
-    # ===== SUBPLOT 1: Acurácia do Modelo =====
-    # Plota a acurácia de treino e validação ao longo das épocas
-    ax1.plot(trainHistory["accuracy"], label="Acurácia Treino")
-    ax1.plot(trainHistory["val_accuracy"], label="Acurácia Validação")
-    ax1.set_title("Acurácia do Modelo")
-    ax1.set_ylabel("Acurácia")
-    ax1.set_xlabel("Época")
+    # ===== SUBPLOT 1: Exatidão do Modelo =====
+    # Plota a Exatidão de treino e validação ao longo dos períodos
+    ax1.plot(trainHistory["accuracy"], label="Exatidão Treino")
+    ax1.plot(trainHistory["val_accuracy"], label="Exatidão Validação")
+    ax1.set_title("Exatidão do Modelo")
+    ax1.set_ylabel("Exatidão")
+    ax1.set_xlabel("Período")
     ax1.legend(loc="lower right")
     # Nota: A diferença entre treino e validação indica possível overfitting
 
-    # ===== SUBPLOT 2: Loss do Modelo =====
-    # Plota a loss (erro) de treino e validação ao longo das épocas
-    ax2.plot(trainHistory["loss"], label="Loss Treino")
-    ax2.plot(trainHistory["val_loss"], label="Loss Validação")
-    ax2.set_title("Loss do Modelo")
-    ax2.set_ylabel("Loss")
-    ax2.set_xlabel("Época")
+    # ===== SUBPLOT 2: perda do Modelo =====
+    # Plota a perda (erro) de treino e validação ao longo dos períodos
+    ax2.plot(trainHistory["loss"], label="Perda Treino")
+    ax2.plot(trainHistory["val_loss"], label="Perda Validação")
+    ax2.set_title("Perda do Modelo")
+    ax2.set_ylabel("Perda")
+    ax2.set_xlabel("Período")
     ax2.legend(loc="upper right")
     # Nota: Convergência simultânea indica bom aprendizado
 
@@ -115,7 +115,7 @@ def plotConfusionMatrix(
 
     # Configuração dos eixos e título
     ax.set_title(title)
-    ax.set_xlabel("Rótulos Preditos")  # Classes que o modelo previu
+    ax.set_xlabel("Rótulos Previstos")  # Classes que o modelo previu
     ax.set_ylabel("Rótulos Verdadeiros")  # Classes reais (corretas)
 
 
@@ -134,7 +134,7 @@ def plotCritialDifferenceDiagram(
            para determinar se há diferenças significativas entre eles.
     
     # Parâmetros
-        -> matrix: DataFrame com as acurácias obtidas pelos modelos
+        -> matrix: DataFrame com as Exatidãos obtidas pelos modelos
         -> colors: Dicionário que associa cada coluna do df a uma cor para usar no diagrama
     
     # Retorno
@@ -158,7 +158,7 @@ def plotCritialDifferenceDiagram(
 
     # ===== CÁLCULO DE RANKS =====
     # Calcula o ranking médio de cada modelo
-    # ascending=False: melhor acurácia = rank menor
+    # ascending=False: melhor Exatidão = rank menor
     ranks = matrix.rank(axis=1, ascending=False).mean()
 
     # ===== TESTE ESTATÍSTICO =====
