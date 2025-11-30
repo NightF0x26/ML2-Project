@@ -23,7 +23,7 @@
 <br/>
 
 <div align="center">
-    <a href="https://github.com/NightF0x26/ML2-Project/blob/main/DEPENDENCIES.md">
+    <a href="https://github.com/NightF0x26/ML2-Project/blob/main/LICENSE">
         <img src="https://img.shields.io/github/license/NightF0x26/ML2-Project?style=flat&logo=gitbook&logoColor=fec8bf&label=License&color=fec8bf">
     </a>
     <a href="">
