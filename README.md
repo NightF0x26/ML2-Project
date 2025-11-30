@@ -1,6 +1,6 @@
 <div align="center">
 
-# ML2 | Urban Sound Classification
+# ML2 | Classificação de Sons Urbanos
 
 </div>
 
@@ -24,55 +24,55 @@
 
 <div align="center">
     <a href="https://github.com/NightF0x26/ML2-Project/blob/main/DEPENDENCIES.md">
-        <img src="https://img.shields.io/github/license/EstevesX10/ML2-Urban-Sound-Classification?style=flat&logo=gitbook&logoColor=fec8bf&label=License&color=fec8bf">
+        <img src="https://img.shields.io/github/license/NightF0x26/ML2-Project?style=flat&logo=gitbook&logoColor=fec8bf&label=License&color=fec8bf">
     </a>
     <a href="">
-        <img src="https://img.shields.io/github/repo-size/EstevesX10/ML2-Urban-Sound-Classification?style=flat&logo=googlecloudstorage&logoColor=fec8bf&logoSize=auto&label=Repository%20Size&color=fec8bf">
+        <img src="https://img.shields.io/github/repo-size/NightF0x26/ML2-Project?style=flat&logo=googlecloudstorage&logoColor=fec8bf&logoSize=auto&label=Repository%20Size&color=fec8bf">
     </a>
     <a href="">
-        <img src="https://img.shields.io/github/stars/EstevesX10/ML2-Urban-Sound-Classification?style=flat&logo=adafruit&logoColor=fec8bf&logoSize=auto&label=Stars&color=fec8bf">
+        <img src="https://img.shields.io/github/stars/NightF0x26/ML2-Project?style=flat&logo=adafruit&logoColor=fec8bf&logoSize=auto&label=Stars&color=fec8bf">
     </a>
     <a href="https://github.com/NightF0x26/ML2-Project/blob/main/DEPENDENCIES.md">
         <img src="https://img.shields.io/badge/Dependencies-DEPENDENCIES.md-white?style=flat&logo=anaconda&logoColor=fec8bf&logoSize=auto&color=fec8bf"> 
     </a>
 </div>
 
-## Project Overview
+## Visão geral do projeto
 
-`Sound Classification` is considered one of the most important tasks in the field of **deep learning**. It has great impact on applications of **voice recognition** within virtual assistants (Like Siri or Alexa), **customer service** as well as in **music and media content recommendation systems**. Moreover, it also impacts the Medical field wheteher to detect abnormalities in heartbeats or repiratory sounds. In addition it is also used within **Security and Surveillance systems** to help detect and assess a possible security breach inside a home whether it is infered by distress calls or even gunshots and glass breaking. Therefore, we aim to develop **deep learning algorithms** that can enable us to properly classify some environmental sounds provided by the `UrbanSound8k Dataset`.
+A `classificação de sons` é considerada uma das tarefas mais importantes no campo do **aprendizado profundo**. Ela tem grande impacto nas aplicações de **reconhecimento de voz** em assistentes virtuais (como Siri ou Alexa), **atendimento ao cliente**, bem como em **sistemas de recomendação de conteúdo musical e de mídia**. Além disso, ela também tem impacto na área médica, seja para detectar anormalidades nos batimentos cardíacos ou nos sons respiratórios. Além disso, também é utilizada em **sistemas de segurança e vigilância** para ajudar a detetar e avaliar uma possível violação de segurança dentro de uma casa, seja por chamadas de socorro ou mesmo tiros e vidros a partir. Portanto, o nosso objetivo é desenvolver **algoritmos de aprendizagem profunda** que nos permitam classificar adequadamente alguns sons ambientais fornecidos pelo `Conjunto de dados UrbanSound8k`.
 
-## Project Development
+## Desenvolvimento do projeto
 
-### Dependencies & Execution
+### Dependências e execução
 
-This project was developed using a `Notebook`. Therefore if you're looking forward to test it out yourself, keep in mind to either use a **[Anaconda Distribution](https://www.anaconda.com/)** or a 3rd party software that helps you inspect and execute it.
+Este projeto foi desenvolvido utilizando um `Notebook`. Portanto, se quiser testá-lo, lembre-se de utilizar uma **[Distribuição Anaconda](https://www.anaconda.com/)** ou um software de terceiros que o ajude a inspecionar e executá-lo.
 
-Therefore, for more informations regarding the **Virtual Environment** used in Anaconda, consider checking the [DEPENDENCIES.md](https://github.com/NightF0x26/ML2-Project/blob/main/DEPENDENCIES.md) file.
+Portanto, para obter mais informações sobre o **Ambiente Virtual** usado no Anaconda, considere verificar o [DEPENDENCIES.md](https://github.com/NightF0x26/ML2-Project/blob/main/DEPENDENCIES.md) file.
 
-### Planned Work
+### Trabalho planeado
 
-The project includes several key phases, including:
+O projeto inclui várias fases principais, incluindo:
 
-1. `Exploratory Data Analysis` : We begin by **examining the UrbanSound8k dataset** to gain deeper insights into its **structure and content** to helps us understand the distribution of sound classes.
-2. `Data pre-processing` : **Cleaning and Preparing the audio samples** to ensure their consistency and quality over the .
-3. `Feature Engineering` : Utilizing the **Librosa** library, we extract **meaningful features** from the audio data such as **Mel-frequency cepstral coefficients (MFCCs)**.
-4. `Model architecture definition` : We develop the **architecture of artificial neural networks** tailored for sound classification, which involves **experimenting with different deep learning models**.
-5. `Training and Performance Evaluation` : Employing the pre-partitioned dataset, we perform **10-fold cross-validation** on each developed networks to then assess the models' performance using key metrics such as accuracy and confusion matrices.
-6. `Statistical Inference` : Perform a **Statistical Evaluation** of the performance between all the developed networks.
+1. `Análise exploratória de dados` : Começamos por **examinar o conjunto de dados UrbanSound8k** para obter uma compreensão mais profunda da sua **estrutura e conteúdo**, o que nos ajuda a compreender a distribuição das classes de som.
+2. `Pré-processamento de dados` : **Limpeza e preparação das amostras de áudio** para garantir a sua consistência e qualidade ao longo do .
+3. `Engenharia de características` : Utilizando a biblioteca **Librosa**, extraímos **características significativas** dos dados de áudio, tais como **coeficientes cepstrais de frequência Mel (MFCCs)**.
+4. `Definição da arquitetura do modelo` : Desenvolvemos a **arquitetura de redes neurais artificiais** adaptadas à classificação de sons, o que envolve **experimentar diferentes modelos de aprendizagem profunda**.
+5. `Treino e avaliação de desempenho` : Empregando o conjunto de dados pré-particionado, realizamos **validação cruzada de 10 vezes** em cada rede desenvolvida para, em seguida, avaliar o desempenho dos modelos usando métricas-chave, como precisão e matrizes de confusão.
+6. `Inferência estatística` : Realizar uma **avaliação estatística** do desempenho entre todas as redes desenvolvidas.
 
-## UrbanSound8K Dataset
+## Conjunto de dados UrbanSound8K
 
-The `UrbanSound8k` dataset contains **8732 labeled sound excerpts** ($\le$ 4s) of urban sounds from **10 classes**: air_conditioner, car_horn, children_playing, dog_bark, drilling, enginge_idling, gun_shot, jackhammer, siren, and street_music. The classes are drawn from the **urban sound taxonomy**.
+O conjunto de dados `UrbanSound8k` contém **8732 trechos de som rotulados** ($\le$ 4s) de sons urbanos de **10 classes**: air_conditioner, car_horn, children_playing, dog_bark, drilling, enginge_idling, gun_shot, jackhammer, siren e street_music. As classes são extraídas da **taxonomia de sons urbanos**.
 
-For a **detailed description** of the dataset please consider checking the dataset web page available [here](https://urbansounddataset.weebly.com/urbansound8k.html). In case you are interested in the **compilation process**, the dataset creators have published a paper outlining the Taxonomy for Urban Sound Research. You can access it [here](https://www.justinsalamon.com/uploads/4/3/9/4/4394963/salamon_urbansound_acmmm14.pdf).
+Para uma **descrição detalhada** do conjunto de dados, consulte a página web do conjunto de dados disponível [aqui](https://urbansounddataset.weebly.com/urbansound8k.html). Caso esteja interessado no **processo de compilação**, os criadores do conjunto de dados publicaram um artigo descrevendo a Taxonomia para Pesquisa de Sons Urbanos. Pode acessá-lo [aqui](https://www.justinsalamon.com/uploads/4/3/9/4/4394963/salamon_urbansound_acmmm14.pdf).
 
-### Additional Datasets
+### Conjuntos de dados adicionais
 
-If you're interested in trying this project yourself, you'll need access to the `complete datasets` we've created. Since GitHub has **file size limits**, we've made them all available [here](https://drive.google.com/drive/folders/13LYorB-vWtQVRRSUJi1nwCNquWJY-Ubi?usp=drive_link).
+Se estiver interessado em experimentar este projeto, precisa de acesso aos ``datasets completos`` que criámos. Como o GitHub tem **limites de tamanho de ficheiro**, disponibilizamos todos  [aqui](https://drive.google.com/drive/folders/13LYorB-vWtQVRRSUJi1nwCNquWJY-Ubi?usp=drive_link).
 
-## Project Results
+## Resultados
 
-### Model Performance
+### Performance dos Modelos
 
 <!-- Network Architectures - Performances -->
 
@@ -80,12 +80,12 @@ If you're interested in trying this project yourself, you'll need access to the 
     <thead>
         <th>
             <div align="center">
-                Network Architecture
+                Arquitectura de Rede
             </div>
         </th>
         <th>
             <div align="center">
-                Final Global Confusion Matrix
+                Matriz de Confusão Global
             </div>
         </th>
     </thead>
@@ -114,39 +114,13 @@ If you're interested in trying this project yourself, you'll need access to the 
                 </p>
             </td>
         </tr>
-        <tr>
-            <td>
-                <p align="center">
-                    CNN Pre-Trained with YAMNET
-                </p>
-            </td>
-            <td>
-                <p align="center">
-                    <img src="./Urban-Sound-Classification/ExperimentalResults/ModelPerformancePlots/CNN_YAMNET_GlobalConfusionMatrix.png" width="70%" />
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p align="center">
-                    ResNet
-                </p>
-            </td>
-            <td>
-                <p align="center">
-                    <img src="./Urban-Sound-Classification/ExperimentalResults/ModelPerformancePlots/ResNet_GlobalConfusionMatrix.png" width="70%" />
-                </p>
-            </td>
-        </tr>
     </tbody>
 </table>
 
-- **MLP**: Achieved **45%** accuracy, struggling with the complexity of the sound data.
-- **CNN**: Performed better at **55%**, benefiting from 2D time-frequency representations (MFCCs).
-- **YAMNet**: Leveraging transfer learning, YAMNet outperformed other models with **70%** accuracy.
-- **ResNet**: Achieved **55%**, similar to CNN, but not as effective as YAMNet.
+- **MLP**: Atingiu **45-50%** de exatidão, mostrando dificuldade com a complexidade dos dados sonoros.
+- **CNN**: Teve melhor desempenho, com **55-60%** de exatidão, beneficiando-se das representações tempo-frequência (MFCCs).
 
-### Dimensionality Reduction Visualization
+### Visualisação da Redução de Dimensionalidade
 
 <!-- Data Distribution Scatter Plots -->
 
@@ -207,18 +181,11 @@ If you're interested in trying this project yourself, you'll need access to the 
     </tbody>
 </table>
 
-### Critical Differences Diagram
+### Diagram de Comparação de Desempenho
 
-<!-- Critical Differences Diagram -->
+<!-- Model Performance Comparison Diagram -->
 <div align="center">
     <table width="30%" height="30%">
-        <thead>
-            <th>
-                <div align="center">
-                    Critical Differences Diagram
-                </div>
-            </th>
-        </thead>
         <tbody>
             <tr>
                 <td>
@@ -231,19 +198,18 @@ If you're interested in trying this project yourself, you'll need access to the 
     </table>
 </div>
 
-This **critical difference** diagram shows the ranks of every model:
+Este gráfico mostra a média das exatidões de cada modelo:
 
-1. **YAMNET (1)** is the best model, significantly **outperforming others**.
-2. **CNN (2.6)** and **ResNet (2.6)** have similar performance, with **no statistical difference** between them.
-3. **MLP (3.8)** is the worst, significantly **worse than YAMNET** and likely CNN / ResNet.
+1. **CNN** é o melhor dos 2 modelos, tendo uma média de exatidão de ~0.58.
+2. **MLP** produz piores resultados, tendo uma média de ~0.47.
 
-## Conclusion
+## Conclusão
 
-Our experiments showed that **YAMNet** with transfer learning produced the best results. Regularization techniques such as **Dropout** and **L2 regularization** helped **reduce overfitting**. While the models performed well overall, difficulties in distinguishing **similar sound classes** suggest that further improvements in feature extraction and model design could enhance performance.
+As nossas experiências mostraram que o **CNN** foi o mais eficaz. Técnicas de regulação como **Dropout** e **L2** aujudaram a diminuir o overfitting. Apesar do bom desempenho geral, distinguir classes acústicamente similares ainda é um desafio e melhorias em extração de cracterísticas e desenho de modelos podem aumentar a exatidão.
 
 ## Authorship
 
-- **Authors** &#8594; [Nuno Gomes](https://github.com/NightF0x26) and [Zhixu Ni]()
+- **Authors** &#8594; [Nuno Gomes](https://github.com/NightF0x26) and [Zhixu Ni](https://github.com/zni0218)
 - **Course** &#8594; Machine Learning II [[CC3043](https://sigarra.up.pt/fcup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=546532)]
 - **University** &#8594; Faculty of Sciences, University of Porto
 

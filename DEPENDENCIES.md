@@ -15,9 +15,6 @@ Or use it inside a `jupyter notebook's code cell`:
 
     !pip install -r requirements.txt
 
-Another approach would be to `Create a New Anaconda Environment` with all the dependencies already installed. To do so, type:
-
-    conda env create -f UrbanSound.yml
 
 ## Execution
 Since the Project was developed using a `Jupyter Notebook` you will need to type the following **command** in order to inspect it:
